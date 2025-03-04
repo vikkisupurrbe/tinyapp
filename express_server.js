@@ -55,3 +55,12 @@ app.post("/urls", (req, res) => {
   console.log("New URL added:", shortID, "=>", urlDatabase[shortID]);
   res.redirect(`/urls/${shortID}`);
 });
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.status(404).send("Short URL ID not found.");
+  }
+});
