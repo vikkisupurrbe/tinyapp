@@ -64,3 +64,8 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("Short URL ID not found.");
   }
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
