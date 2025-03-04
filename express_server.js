@@ -30,4 +30,9 @@ app.get("/urls", (req, res) => { // when a user visits /urls, the server
   const templateVars = { urls: urlDatabase }; 
   // passes templateVars to urls_index.ejs, renders urls_index.ejs and sends the response back to the user
   res.render("urls_index", templateVars);
-})
+});
+
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  res.render("urls_show", templateVars);
+});
