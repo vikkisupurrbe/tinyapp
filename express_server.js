@@ -11,6 +11,10 @@ const urlDatabase = {
 
 app.use(express.urlencoded({ extended: true })); // convert the request body from a buffer into string that we can read
 
+function generateRandomString() {
+  return Math.random().toString(36).substring(2, 8);
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
