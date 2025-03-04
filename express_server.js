@@ -24,3 +24,10 @@ app.get("/urls.json", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+
+app.get("/urls", (req, res) => { // when a user visits /urls, the server
+  // creates templateVars with urlDatabase
+  const templateVars = { urls: urlDatabase }; 
+  // passes templateVars to urls_index.ejs, renders urls_index.ejs and sends the response back to the user
+  res.render("urls_index", templateVars);
+})
