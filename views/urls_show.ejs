@@ -12,13 +12,15 @@
   </head>
 
   <body>
+    <%- include("partials/_header") %>
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">TinyURL for: <a href="#"><%= longURL %></a></h5>
+        <h5 class="card-title">TinyURL for: <a href="<%= longURL %>" target="_blank"><%= longURL %></a></h5>
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <a href="/urls/new">Create New URL</a>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
