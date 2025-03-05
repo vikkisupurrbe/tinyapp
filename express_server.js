@@ -37,8 +37,8 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => { // when a user visits /urls, the server
   // creates templateVars with urlDatabase
-  const templateVars = { 
-    urls: urlDatabase, 
+  const templateVars = {
+    urls: urlDatabase,
     username: req.cookies["username"] // add username from cookie
   };
   // passes templateVars to urls_index.ejs, renders urls_index.ejs and sends the response back to the user
@@ -53,10 +53,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { 
-    id: req.params.id, 
-    longURL: urlDatabase[req.params.id], 
-    username: req.cookies["username"]  
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
