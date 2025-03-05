@@ -20,9 +20,34 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
-        <a href="/urls/new">Create New URL</a>
+        <div class="card-footer text-muted">
+          <form method="POST" action="/urls/<%= id %>/edit">
+            <div class="form-group text-center">
+              <h5>Edit</h5>
+              <div class="form-row justify-content-center align-items-center">
+                <div class="col-auto">
+                  <label for="newURL" class="mr-2">New URL:</label>
+                </div>
+                <div class="col-auto">
+                  <input
+                    class="form-control"
+                    type="text"
+                    name="newURL"
+                    placeholder="http://"
+                    style="width: 300px;"
+                  />
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="card-footer text-muted"></div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="/urls/new">Create New URL</a>
     </div>
     <!-- Bootstrap JS -->
     <script
