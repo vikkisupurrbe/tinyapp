@@ -26,7 +26,6 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
 
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -45,6 +44,7 @@ app.get("/urls", (req, res) => { // when a user visits /urls, the server
   res.render("urls_index", templateVars);
 });
 
+// show the page to create a shortURL based on a long URL
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     username: req.cookies["username"]
@@ -52,6 +52,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+// show the page with the provided longURL and the shortID
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
@@ -61,6 +62,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// create a randomly generated shortID, store shortID - longURL as a new key-value pair in urlDatabase
 app.post("/urls", (req, res) => {
   const shortID = generateRandomString();
   urlDatabase[shortID] = req.body.longURL;
@@ -69,6 +71,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortID}`);
 });
 
+// redirect user to the original website using the shortID, if user enters an invalid shortID, no page found
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   if (longURL) {
@@ -78,11 +81,13 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
+// delete the url from urlDatabase
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
+// edit the existing longURL with the current shortID
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   const newURL = req.body.newURL;
@@ -90,13 +95,23 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+// login
 app.post("/login", (req, res) => {
   const username = req.body.username;
   res.cookie("username", username);
   res.redirect("/urls");
 });
 
+// logout
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
+});
+
+// register as a new user
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("register", templateVars);
 });
