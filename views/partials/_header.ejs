@@ -20,10 +20,17 @@
     </div>
     <div>
     <!-- Login Form -->
-      <form action = "/login" method="POST">
+    <% if (username) { %>
+      <span>Logged in as: <%= username %></span>
+      <form method="POST" action="/logout">
+        <button type="submit">Logout</button>
+      </form>
+    <% } else { %>
+      <form method="POST" action = "/login">
         <input type="text" name="username" placeholder="username">
         <button type="submit" class="btn btn-primary">Login</button>
       </form>  
+    <% } %>
     </div>
   </nav>
 </header>
