@@ -1,8 +1,11 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app =  express();
 const PORT = 8080;
 
 app.set("view engine", "ejs"); // set EJS as the templating engine
+app.use(cookieParser());
+
 
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
