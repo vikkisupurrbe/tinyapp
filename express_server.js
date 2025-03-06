@@ -108,10 +108,10 @@ app.post("/urls/:id", (req, res) => {
 app.get('/login', (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
-  const templateVars = {
-    user
-  };
-  res.render('login', templateVars)
+  if (user) {
+    return res.redirect('/urls');
+  }
+  res.render('login', { user: null });
 });
 
 // login POST
@@ -135,10 +135,10 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
-  const templateVars = {
-    user
-  };
-  res.render("register", templateVars);
+  if (user) {
+    return res.redirect('urls');
+  }
+  res.render("register", { user: null });
 });
 
 // create a new user object to the global users object
