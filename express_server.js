@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const users = require("./userData");
-const { createUser, getUserByEmail } = require("./userHelpers");
+const { createUser, getUserByEmail, authenticateUser } = require("./userHelpers");
 const app =  express();
 const PORT = 8080;
 
@@ -116,11 +116,13 @@ app.get('/login', (req, res) => {
 
 // login POST
 app.post("/login", (req, res) => {
-  const {email} = req.body;
-  const user = Object.values(users).find(user => user.email === email);
-  if (user) {
-    res.cookie("user_id", user.id);
+  const {email, password} = req.body;
+  const {error, data} = authenticateUser(users, email, password);
+  if (error) {
+    res.status(403);
+    res.send(error);
   }
+  res.cookie("user_id", data.id);
   res.redirect("urls");
 });
 
