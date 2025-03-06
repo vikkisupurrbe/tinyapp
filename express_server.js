@@ -104,7 +104,17 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// login
+// login GET, shows the login page
+app.get('/login', (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = {
+    user
+  };
+  res.render('login', templateVars)
+});
+
+// login POST
 app.post("/login", (req, res) => {
   const {email} = req.body;
   const user = Object.values(users).find(user => user.email === email);
