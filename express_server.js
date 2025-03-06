@@ -117,3 +117,12 @@ app.get("/register", (req, res) => {
   };
   res.render("register", templateVars);
 });
+
+// create a new user object to the global users object
+app.post("/register", (req, res) => {
+  const data = createUser(users, req.body);
+  // console.log("New user:", data); new user with id, email, password created
+  // console.log(users); new user added to users
+  res.cookie("user_id", data.id);
+  res.redirect("/urls");
+});
