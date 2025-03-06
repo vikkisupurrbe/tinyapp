@@ -119,8 +119,7 @@ app.post("/login", (req, res) => {
   const {email, password} = req.body;
   const {error, data} = authenticateUser(users, email, password);
   if (error) {
-    res.status(403);
-    res.send(error);
+    return res.status(403).send(error);
   }
   res.cookie("user_id", data.id);
   res.redirect("urls");
@@ -147,8 +146,7 @@ app.post("/register", (req, res) => {
   const {error, data} = createUser(users, req.body);
 
   if (error) {
-    res.status(400);
-    res.send(error);
+    return res.status(400).send(error);
   }
   // console.log("New user:", data); new user with id, email, password created
   // console.log(users); new user added to users
