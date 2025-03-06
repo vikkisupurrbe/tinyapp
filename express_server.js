@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const users = require("./userData");
-const { createUser } = require("./userHelpers");
+const { createUser, getUserByEmail } = require("./userHelpers");
 const app =  express();
 const PORT = 8080;
 
@@ -132,7 +132,12 @@ app.get("/register", (req, res) => {
 
 // create a new user object to the global users object
 app.post("/register", (req, res) => {
-  const data = createUser(users, req.body);
+  const {error, data} = createUser(users, req.body);
+
+  if (error) {
+    res.status(404);
+    res.send(error);
+  }
   // console.log("New user:", data); new user with id, email, password created
   // console.log(users); new user added to users
   res.cookie("user_id", data.id);
