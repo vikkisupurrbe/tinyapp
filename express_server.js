@@ -135,7 +135,7 @@ app.post("/register", (req, res) => {
   const {error, data} = createUser(users, req.body);
 
   if (error) {
-    res.status(404);
+    res.status(400);
     res.send(error);
   }
   // console.log("New user:", data); new user with id, email, password created
