@@ -8,10 +8,15 @@ const PORT = 8080;
 app.set("view engine", "ejs"); // set EJS as the templating engine
 app.use(cookieParser());
 
-
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 app.use(express.urlencoded({ extended: true })); // convert the request body from a buffer into string that we can read
@@ -62,9 +67,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
+  const urlData = urlDatabase[req.params.id];
+
+  if (!urlData) {
+    return res.status(404).send("<h1>404 - URL Not Found</h1><p>The short URL does not exist.</p><a href='/urls'>Go Back</a>");
+  }
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlData.longURL,
     user
   };
   res.render("urls_show", templateVars);
@@ -78,7 +88,10 @@ app.post("/urls", (req, res) => {
     return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to shorten URLs. <a href='/login'>Login here</a></p>");
   }
   const shortID = generateRandomString();
-  urlDatabase[shortID] = req.body.longURL;
+  urlDatabase[shortID] = {
+    longURL: req.body.longURL,
+    userID: userId
+  };
   console.log(req.body);
   console.log("New URL added:", shortID, "=>", urlDatabase[shortID]);
   res.redirect(`/urls/${shortID}`);
@@ -86,12 +99,12 @@ app.post("/urls", (req, res) => {
 
 // redirect user to the original website using the shortID, if user enters an invalid shortID, no page found
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
-  if (longURL) {
-    res.redirect(longURL);
-  } else {
-    res.status(404).send("<h1>404 - Short URL Not Found</h1><p>The short URL you are looking for does not exist.</p><p><a href='/urls'>Go back to My URLs</a></p>");
+  const urlData = urlDatabase[req.params.id]; // check if the URL exists
+  if (!urlData) {
+    return res.status(404).send("<h1>404 - Short URL Not Found</h1><p>The short URL you are looking for does not exist.</p><p><a href='/urls'>Go back to My URLs</a></p>");
   }
+  
+  res.redirect(urlData.longURL);
 });
 
 // delete the url from urlDatabase
@@ -104,7 +117,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   const newURL = req.body.newURL;
-  urlDatabase[id] = newURL;
+  urlDatabase[id].longURL = newURL;
   res.redirect("/urls");
 });
 
