@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { getUserByEmail } = require('../userHelpers');
+const { getUserByEmail, urlsForUser } = require('../userHelpers');
 
 const testUsers = {
   "userRandomID": {
@@ -14,6 +14,7 @@ const testUsers = {
   }
 };
 
+// tests for getUserByEmail
 describe('getUserByEmail', function() {
   it('should return a user with valid email', function() {
     const user = getUserByEmail(testUsers,"user@example.com")
@@ -45,3 +46,64 @@ describe('getUserByEmail', function() {
     assert.isNull(user.data);
   });
 });
+
+// tests for urlsForUser by AI
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
+  x7UsT9: {
+    longURL: "https://www.reddit.com",
+    userID: "user2ID",
+  }
+};
+
+describe('urlsForUser', function() {
+  it('should return the URLs that belong to the specified user', function() {
+    const userId = "aJ48lW";
+    const result = urlsForUser(userId, urlDatabase);
+    const expected = {
+      b6UTxQ: {
+        longURL: "https://www.tsn.ca",
+        userID: "aJ48lW",
+      },
+      i3BoGr: {
+        longURL: "https://www.google.ca",
+        userID: "aJ48lW",
+      }
+    };
+
+    assert.deepEqual(result, expected);  // Assert the result matches the expected URLs for the given user
+  });
+
+  it('should return an empty object if no URLs belong to the specified user', function() {
+    const userId = "user3ID";  // User who does not exist in the urlDatabase
+    const result = urlsForUser(userId, urlDatabase);
+    const expected = {};
+
+    assert.deepEqual(result, expected);  // Assert that the result is an empty object
+  });
+
+  it('should return an empty object if the urlDatabase is empty', function() {
+    const emptyDatabase = {};
+    const userId = "aJ48lW";  // User id that would normally return URLs
+    const result = urlsForUser(userId, emptyDatabase);
+    const expected = {};
+
+    assert.deepEqual(result, expected);  // Assert that the result is an empty object
+  });
+
+  it('should not return URLs that do not belong to the specified user', function() {
+    const userId = "aJ48lW";
+    const result = urlsForUser(userId, urlDatabase);
+    
+    // Ensure that no URLs belonging to other users are returned
+    assert.isUndefined(result['x7UsT9']);  // User with ID 'user2ID' should not appear for 'aJ48lW'
+  });
+});
+
