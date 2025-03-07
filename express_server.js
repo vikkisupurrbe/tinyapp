@@ -36,7 +36,13 @@ const generateRandomString = function() {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userId = req.session.user_id;
+  const user = users[userId];
+  // login check
+  if (!user) {
+    return res.redirect("/login");
+  }
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
@@ -82,6 +88,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 // show the page with the provided longURL and the shortID
+// acessing urlData => shortURL, longURL, userId
+// confirm user access: session id, who the user is
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
