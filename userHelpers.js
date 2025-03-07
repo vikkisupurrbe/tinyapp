@@ -15,11 +15,11 @@ const getUserByEmail = (users, email) => {
 // users login with email and password need to match the database
 const authenticateUser = (users, email, password) => {
   for (let userId in users) {
-    if (users[userId].email === email) { 
-      if (users[userId].password === password) { 
-        return { error: null, data: users[userId] }; 
+    if (users[userId].email === email) {
+      if (users[userId].password === password) {
+        return { error: null, data: users[userId] };
       } else {
-        return { error: "Password does not match!", data: null }; 
+        return { error: "Password does not match!", data: null };
       }
     }
   }
@@ -32,30 +32,30 @@ const generateRandomString = function() {
 }; // generate a random alphanumeric string that is 8 characters long for newUserID
 
 const createUser = (users, newUserData) => {
-
   const newUserID = generateRandomString();
-
-  const newUser = {
-    id: newUserID,
-    email: newUserData.email,
-    password: newUserData.password,
-  };
-
+  
   // check if the email newUser entered already exists
-  const {error} = getUserByEmail(users, newUser.email);
+  const {error} = getUserByEmail(users, newUserData.email);
   if (error === null) {
     return {error: "User already exists!", data: null};
   }
-
+  
   // check for empty field
-  const isInvalidUser = Object.values(newUser).filter((value) => value === "").length > 0;
-
-  if (isInvalidUser) {
-    return {error: "Empty field!", data: null};
+  if (!newUserData.email || !newUserData.password) {
+    return { error: "Empty field!", data: null };
   }
 
-  users[newUserID] = newUser; // add new user to users
+  // hash the password before storing
+  const hashedPassword = bcrypt.hashSync(newUserData.password, 10);
+  
+  const newUser = {
+    id: newUserID,
+    email: newUserData.email,
+    password: hashedPassword
+  };
 
+  users[newUserID] = newUser; // add new user to users
+  // console.log(newUser);
   return { error: null, data: newUser };
 };
 
@@ -87,9 +87,9 @@ const users = {
   },
 };
 
-console.log(authenticateUser(users, "user@example.com", "123456")); 
+console.log(authenticateUser(users, "user@example.com", "123456"));
 // { error: 'Password does not match!', data: null }
-console.log(authenticateUser(users, "momo@123.com", "123456")); 
+console.log(authenticateUser(users, "momo@123.com", "123456"));
 // { error: 'Email not found!', data: null }
 
 console.log(authenticateUser(users, "user@example.com", "purple-monkey-dinosaur"));
