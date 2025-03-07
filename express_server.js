@@ -1,5 +1,6 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
+//const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
 const users = require("./userData");
 const { createUser, getUserByEmail, authenticateUser, urlsForUser } = require("./userHelpers");
@@ -7,7 +8,15 @@ const app =  express();
 const PORT = 8080;
 
 app.set("view engine", "ejs"); // set EJS as the templating engine
-app.use(cookieParser());
+//app.use(cookieParser());
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["pompompurin"],
+    maxAge: 24 * 60 * 60 * 1000,
+  })
+);
 
 const urlDatabase = {
   b6UTxQ: {
@@ -43,7 +52,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => { // when a user visits /urls, the server shows
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   // login check
   if (!user) {
@@ -63,7 +72,7 @@ app.get("/urls", (req, res) => { // when a user visits /urls, the server shows
 
 // show the page to create a shortURL based on a long URL
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   // login check
   if (!user) {
@@ -74,7 +83,7 @@ app.get("/urls/new", (req, res) => {
 
 // show the page with the provided longURL and the shortID
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   const urlData = urlDatabase[req.params.id];
   // check if user is logged in
@@ -100,7 +109,7 @@ app.get("/urls/:id", (req, res) => {
 
 // create a randomly generated shortID, store shortID - longURL as a new key-value pair in urlDatabase
 app.post("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   // login check
   if (!user) {
@@ -129,7 +138,7 @@ app.get("/u/:id", (req, res) => {
 
 // delete the url from urlDatabase
 app.post("/urls/:id/delete", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const id = req.params.id;
   const urlData = urlDatabase[id];
   
@@ -154,7 +163,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // edit the existing longURL with the current shortID
 app.post("/urls/:id", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const id = req.params.id;
   const newURL = req.body.newURL;
   const urlData = urlDatabase[id];
@@ -180,7 +189,7 @@ app.post("/urls/:id", (req, res) => {
 
 // login GET, shows the login page
 app.get('/login', (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
     return res.redirect('/urls');
@@ -195,19 +204,19 @@ app.post("/login", (req, res) => {
   if (error) {
     return res.status(403).send(error);
   }
-  res.cookie("user_id", data.id);
+  req.session.user_id = data.id;
   res.redirect("urls");
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
 // register as a new user
 app.get("/register", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
     return res.redirect('urls');
@@ -224,6 +233,6 @@ app.post("/register", (req, res) => {
   }
   // console.log("New user:", data); new user with id, email, password created
   // console.log(users); new user added to users
-  res.cookie("user_id", data.id);
+  req.session.user_id = data.id;
   res.redirect("/urls");
 });
