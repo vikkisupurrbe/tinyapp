@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 // look up users by their email
 const getUserByEmail = (users, email) => {
 
