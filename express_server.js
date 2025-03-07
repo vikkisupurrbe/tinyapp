@@ -41,16 +41,19 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/urls", (req, res) => { // when a user visits /urls, the server
+app.get("/urls", (req, res) => { // when a user visits /urls, the server shows
   const userId = req.cookies["user_id"];
   const user = users[userId];
-
+  // login check
   if (!user) {
     return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to shorten URLs. <a href='/login'>Login here</a></p>");
   }
+  // only get URLs belong to the logged-in user
+  const userUrls = urlsForUser(userId, urlDatabase);
+
   // creates templateVars with urlDatabase
   const templateVars = {
-    urls: urlDatabase,
+    urls: userUrls,
     user
   };
   // passes templateVars to urls_index.ejs, renders urls_index.ejs and sends the response back to the user
@@ -61,6 +64,7 @@ app.get("/urls", (req, res) => { // when a user visits /urls, the server
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
+  // login check
   if (!user) {
     return res.redirect("/login");
   }
@@ -72,10 +76,19 @@ app.get("/urls/:id", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
   const urlData = urlDatabase[req.params.id];
-
+  // check if user is logged in
+  if (!user) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to view URLs. <a href='/login'>Login here</a></p>");
+  }
+  // check if URL exists
   if (!urlData) {
     return res.status(404).send("<h1>404 - URL Not Found</h1><p>The short URL does not exist.</p><a href='/urls'>Go Back</a>");
   }
+  // check if the user owns the URL
+  if (urlData.userID !== userId) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You do not have permission to view this URL.</p><a href='/urls'>Go Back</a>");
+  }
+
   const templateVars = {
     id: req.params.id,
     longURL: urlData.longURL,
@@ -88,6 +101,7 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
+  // login check
   if (!user) {
     return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to shorten URLs. <a href='/login'>Login here</a></p>");
   }
@@ -103,7 +117,8 @@ app.post("/urls", (req, res) => {
 
 // redirect user to the original website using the shortID, if user enters an invalid shortID, no page found
 app.get("/u/:id", (req, res) => {
-  const urlData = urlDatabase[req.params.id]; // check if the URL exists
+  const urlData = urlDatabase[req.params.id]; 
+  // check if the URL exists
   if (!urlData) {
     return res.status(404).send("<h1>404 - Short URL Not Found</h1><p>The short URL you are looking for does not exist.</p><p><a href='/urls'>Go back to My URLs</a></p>");
   }
