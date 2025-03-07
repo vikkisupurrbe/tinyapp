@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const users = require("./userData");
-const { createUser, getUserByEmail, authenticateUser } = require("./userHelpers");
+const { createUser, getUserByEmail, authenticateUser, urlsForUser } = require("./userHelpers");
 const app =  express();
 const PORT = 8080;
 
@@ -44,6 +44,10 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => { // when a user visits /urls, the server
   const userId = req.cookies["user_id"];
   const user = users[userId];
+
+  if (!user) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to shorten URLs. <a href='/login'>Login here</a></p>");
+  }
   // creates templateVars with urlDatabase
   const templateVars = {
     urls: urlDatabase,

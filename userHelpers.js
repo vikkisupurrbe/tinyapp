@@ -57,7 +57,18 @@ const createUser = (users, newUserData) => {
   return { error: null, data: newUser };
 };
 
-module.exports = { createUser, getUserByEmail, authenticateUser };
+const urlsForUser = (id) => {
+  const userUrls = {};
+
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] =  urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+};
+
+module.exports = { createUser, getUserByEmail, authenticateUser, urlsForUser };
 
 // test
 /*
