@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const users = require("./userData");
 const { createUser, getUserByEmail, authenticateUser, urlsForUser } = require("./userHelpers");
 const app =  express();
@@ -172,7 +173,7 @@ app.post("/urls/:id", (req, res) => {
   if (urlData.userID !== userId) {
     return res.status(403).send("<h1>Access Denied</h1><p>You do not have permission to edit this URL.</p><a href='/urls'>Go Back</a>");
   }
-  
+
   urlDatabase[id].longURL = newURL;
   res.redirect("/urls");
 });
