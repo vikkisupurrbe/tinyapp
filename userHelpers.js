@@ -16,14 +16,14 @@ const getUserByEmail = (users, email) => {
 const authenticateUser = (users, email, password) => {
   for (let userId in users) {
     if (users[userId].email === email) {
-      if (users[userId].password === password) {
+      if (bcrypt.compareSync(password, users[userId].password)) {
         return { error: null, data: users[userId] };
       } else {
         return { error: "Password does not match!", data: null };
       }
     }
   }
-  return { error: "Email not found!", data: null };
+  return { error: "Email not found in the system. Please register.", data: null };
 };
 
 // new user registration

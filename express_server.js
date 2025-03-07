@@ -118,7 +118,7 @@ app.post("/urls", (req, res) => {
 
 // redirect user to the original website using the shortID, if user enters an invalid shortID, no page found
 app.get("/u/:id", (req, res) => {
-  const urlData = urlDatabase[req.params.id]; 
+  const urlData = urlDatabase[req.params.id];
   // check if the URL exists
   if (!urlData) {
     return res.status(404).send("<h1>404 - Short URL Not Found</h1><p>The short URL you are looking for does not exist.</p><p><a href='/urls'>Go back to My URLs</a></p>");
