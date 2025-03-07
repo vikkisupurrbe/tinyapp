@@ -52,11 +52,10 @@ app.get("/urls", (req, res) => { // when a user visits /urls, the server
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
-
-  const templateVars = {
-    user
-  };
-  res.render("urls_new", templateVars);
+  if (!user) {
+    return res.redirect("/login");
+  }
+  res.render("urls_new", {user: user});
 });
 
 // show the page with the provided longURL and the shortID
@@ -73,6 +72,11 @@ app.get("/urls/:id", (req, res) => {
 
 // create a randomly generated shortID, store shortID - longURL as a new key-value pair in urlDatabase
 app.post("/urls", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  if (!user) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to shorten URLs. <a href='/login'>Login here</a></p>");
+  }
   const shortID = generateRandomString();
   urlDatabase[shortID] = req.body.longURL;
   console.log(req.body);
@@ -86,7 +90,7 @@ app.get("/u/:id", (req, res) => {
   if (longURL) {
     res.redirect(longURL);
   } else {
-    res.status(404).send("Short URL ID not found.");
+    res.status(404).send("<h1>404 - Short URL Not Found</h1><p>The short URL you are looking for does not exist.</p><p><a href='/urls'>Go back to My URLs</a></p>");
   }
 });
 
