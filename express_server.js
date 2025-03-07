@@ -128,14 +128,51 @@ app.get("/u/:id", (req, res) => {
 
 // delete the url from urlDatabase
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  const userId = req.cookies["user_id"];
+  const id = req.params.id;
+  const urlData = urlDatabase[id];
+  
+  // Check if user is logged in
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to delete URLs. <a href='/login'>Login here</a></p>");
+  }
+  
+  // Check if URL exists
+  if (!urlData) {
+    return res.status(404).send("<h1>404 - URL Not Found</h1><p>The short URL does not exist.</p><a href='/urls'>Go Back</a>");
+  }
+  
+  // Check if user owns the URL
+  if (urlData.userID !== userId) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You do not have permission to delete this URL.</p><a href='/urls'>Go Back</a>");
+  }
+  
+  delete urlDatabase[id];
   res.redirect("/urls");
 });
 
 // edit the existing longURL with the current shortID
 app.post("/urls/:id", (req, res) => {
+  const userId = req.cookies["user_id"];
   const id = req.params.id;
   const newURL = req.body.newURL;
+  const urlData = urlDatabase[id];
+  
+  // Check if user is logged in
+  if (!userId || !users[userId]) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You must be logged in to edit URLs. <a href='/login'>Login here</a></p>");
+  }
+  
+  // Check if URL exists
+  if (!urlData) {
+    return res.status(404).send("<h1>404 - URL Not Found</h1><p>The short URL does not exist.</p><a href='/urls'>Go Back</a>");
+  }
+  
+  // Check if user owns the URL
+  if (urlData.userID !== userId) {
+    return res.status(403).send("<h1>Access Denied</h1><p>You do not have permission to edit this URL.</p><a href='/urls'>Go Back</a>");
+  }
+  
   urlDatabase[id].longURL = newURL;
   res.redirect("/urls");
 });
