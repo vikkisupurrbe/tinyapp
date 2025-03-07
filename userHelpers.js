@@ -57,7 +57,7 @@ const createUser = (users, newUserData) => {
   return { error: null, data: newUser };
 };
 
-const urlsForUser = (id) => {
+const urlsForUser = (id, urlDatabase) => {
   const userUrls = {};
 
   for (const shortURL in urlDatabase) {
